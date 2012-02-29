@@ -1,0 +1,10 @@
+Simple chat application.
+
+//******************************
+
+Application is using Pusher.
+All request are events sending to Pusher server
+and then Pusher broadcast event to all other subscribe
+the same channel.
+
+Non commercial - only for tests.
