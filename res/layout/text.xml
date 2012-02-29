@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#999999" >
+
+    <RelativeLayout
+        android:id="@+id/back"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="1dp"
+        android:background="#ffffff" >
+
+    <TextView
+        android:id="@+id/name"
+        android:textColor="#999999"
+        android:layout_margin="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/time"
+        android:layout_alignParentTop="true"
+        android:text="Name" />
+
+    <TextView
+        android:id="@+id/message"
+        android:textColor="#686868"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/name"
+        android:paddingBottom="5dp"
+        android:text="Some chat message Some chat message Some chat message Some chat message Some chat message Some chat message Some chat message " />
+
+    <TextView
+        android:id="@+id/time"
+        android:textColor="#aaaaaa"
+        android:layout_marginTop = "5dp"
+        android:layout_marginLeft = "5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:text="TextView" />
+
+	</RelativeLayout>
+</RelativeLayout>

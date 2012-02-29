@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff" >
+    
+        <EditText
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toLeftOf="@+id/send"
+            android:layout_toRightOf="@+id/clear"
+            android:hint="enter your text here"
+            android:maxLines="1"
+            android:textColor="#000000"
+            android:textSize="14dp" />
+
+        <Button
+            android:id="@+id/send"            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:onClick="onClick"
+            android:text="Send" />
+
+        <ScrollView 
+            android:id="@+id/chatScroll"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+			android:layout_alignParentTop="true"
+            android:layout_above="@+id/text">
+	        <LinearLayout
+	            android:id="@+id/chatList"
+				android:layout_width="match_parent"
+	            android:layout_height="match_parent"
+	            android:orientation="vertical" >
+	        </LinearLayout>
+        </ScrollView>
+
+        <Button
+            android:id="@+id/clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:text="Clear" />
+
+</RelativeLayout>
