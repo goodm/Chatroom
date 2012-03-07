@@ -5,8 +5,11 @@ import org.json.JSONObject;
 import com.lukasz.chat.login.Login;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -56,15 +59,17 @@ public class Main extends Activity
     View.OnTouchListener gestureListener;
 	
     private Chat app;
+
+	private AlertDialog alert;
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		
+		dialogs();
 		app = (Chat)getApplication();
 		app.setUpPusher(this);
-		
+				
 		if(app.getUser() == null)
 		{
 			Intent i = new Intent(getApplicationContext(), Login.class);
@@ -73,15 +78,42 @@ public class Main extends Activity
 		}
 		else
 		{
-			inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			chat = inflater.inflate(R.layout.chat, null);
-	 		setContentView(chat);
-	 		messager = new MessageReceiver(Main.this,inflater,chatScroll,chatList);
-	 		setUpChatViews();
-			setUpAnimations();
+			if(isOnline())
+			{
+				alert.show();
+				nick = app.getUser();
+				inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				chat = inflater.inflate(R.layout.chat, null);
+		 		setContentView(chat);
+				Start start = new Start();
+		    	start.execute("...");
+		 		messager = new MessageReceiver(Main.this,inflater,chatScroll,chatList);
+		 		setUpChatViews();
+				setUpAnimations();
+			}
+			else
+			{
+				finish();
+			}
 		}
 	}
 
+    private class Start extends AsyncTask<String, Void, String> 
+    {
+    	@Override
+    	protected String doInBackground(String... urls) 
+    	{
+    		app.startChat();
+    		return null;
+    	}
+    	
+    	@Override
+    	protected void onPostExecute(String result) 
+    	{	    		
+    		alert.cancel();
+    	}
+    }
+	
 	private void setUpAnimations() 
 	{
 		a = AnimationUtils.loadAnimation(this, R.anim.out);
@@ -217,6 +249,28 @@ public class Main extends Activity
             }
             return false;
         }
+    }
+	
+	public boolean isOnline() 
+    {
+        NetworkInfo info = ((ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+        if (info==null || !info.isConnected()) 
+        {
+                return false;
+        }
+        if (info.isRoaming()) 
+        {
+                return true;
+        }
+        return true;
+    }
+	
+	private void dialogs()
+    {
+
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	builder.setMessage("Loading");
+    	alert = builder.create();
     }
 	
 	@Override

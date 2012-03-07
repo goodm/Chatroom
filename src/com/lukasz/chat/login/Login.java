@@ -62,6 +62,7 @@ public class Login extends Activity
     	{	    		
 			Intent i = new Intent(getApplicationContext(), Main.class);
     		startActivity(i);
+    		finish();
     	}
     }
 }
