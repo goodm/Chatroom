@@ -2,8 +2,11 @@ package com.lukasz.chat;
 
 import org.json.JSONObject;
 
+import com.lukasz.chat.login.Login;
+
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,10 +27,6 @@ import android.widget.Toast;
 
 public class Main extends Activity 
 {
-
-	//Views
-	private RelativeLayout loginLayout;
-	private EditText nickEdit;
 	private String nick = "";
 	
 	//Chat View
@@ -64,17 +63,23 @@ public class Main extends Activity
 		super.onCreate(savedInstanceState);
 		
 		app = (Chat)getApplication();
+		app.setUpPusher(this);
 		
-		inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		chat = inflater.inflate(R.layout.chat, null);
-		startView = inflater.inflate(R.layout.main, null);
- 		setContentView(startView);
-
-		
-		setUpAnimations();
-		setUpViews();
-						
- 		startView.startAnimation(b);
+		if(app.getUser() == null)
+		{
+			Intent i = new Intent(getApplicationContext(), Login.class);
+    		startActivity(i);
+    		finish();
+		}
+		else
+		{
+			inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			chat = inflater.inflate(R.layout.chat, null);
+	 		setContentView(chat);
+	 		messager = new MessageReceiver(Main.this,inflater,chatScroll,chatList);
+	 		setUpChatViews();
+			setUpAnimations();
+		}
 	}
 
 	private void setUpAnimations() 
@@ -90,7 +95,7 @@ public class Main extends Activity
 			@Override
 			public void onAnimationEnd(Animation animation) 
 			{
-				chatList.setVisibility(View.INVISIBLE);
+
 			}
 
 			@Override
@@ -107,11 +112,7 @@ public class Main extends Activity
 			@Override
 			public void onAnimationEnd(Animation animation) 
 			{
-				setContentView(chat);
-				chat.startAnimation(b);
-				setUpChatViews();
-				messager = new MessageReceiver(Main.this,inflater,chatScroll,chatList);
-	    		Toast.makeText(Main.this,"Welcome " + nick + ".",Toast.LENGTH_LONG).show();
+				
 			}
 
 			@Override
@@ -127,22 +128,6 @@ public class Main extends Activity
 	{
 		switch(v.getId())
 		{
-			case R.id.enter:
-				nick = nickEdit.getText().toString();
-				if(nick.length()>0)
-				{
-					if(load == false)
-					{
-						loading.setVisibility(View.VISIBLE);
-						load = true;
-						app.startChat();
-					}
-				}
-				else
-				{
-					Toast.makeText(Main.this,"You must enter your name/nick.",Toast.LENGTH_LONG).show();
-				}
-				break;
 			case R.id.send:
 				String mess = input.getText().toString();
 				if(mess.length()>0)
@@ -193,14 +178,6 @@ public class Main extends Activity
         };
 
         //touch.setOnTouchListener(gestureListener);
-	}
-	
-	private void setUpViews()
-	{
-		loginLayout = (RelativeLayout)startView.findViewById(R.id.loginLayout);
-		nickEdit = (EditText)startView.findViewById(R.id.nameEnter);	
-		loading = (ProgressBar)startView.findViewById(R.id.loading);
-		loading.setVisibility(View.INVISIBLE);
 	}
 
 	public void addView(View v)

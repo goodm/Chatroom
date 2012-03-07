@@ -2,10 +2,14 @@ package com.lukasz.chat;
 
 import org.json.JSONObject;
 
+import com.lukasz.chat.pusher.Pusher;
+import com.lukasz.chat.pusher.PusherCallback;
+
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.View;
 
 public class Chat extends Application 
 {
@@ -19,12 +23,20 @@ public class Chat extends Application
 
 	public Pusher pusher;
 	
-	private Main main;
+	private SharedPreferences prefs;
+	private SharedPreferences.Editor editor;
 	
-	public Chat(Main m)
+	@Override
+	public void onCreate()
 	{
-		this.main = m;
+		super.onCreate();
 		
+		prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        editor = prefs.edit();
+	}
+	
+	public void setUpPusher(Main m)
+	{
 		pusher = new Pusher(PUSHER_APP_KEY, PUSHER_APP_SECRET,m, false);
 		pusher.bindAll(new PusherCallback() 
 		{
@@ -36,28 +48,26 @@ public class Chat extends Application
 		});
 	}
 	
-	public void startChat()
+	public void setPrefs(String user)
 	{
-		Start start = new Start();
-    	start.execute("...");
+		editor.putString("user", user);
+		editor.commit();
 	}
 	
-    private class Start extends AsyncTask<String, Void, String> 
-    {
-    	@Override
-    	protected String doInBackground(String... urls) 
-    	{
-    		String response = "";    		
-			pusher.connect();
-			pusher.subscribe(PRIVATE_CHANNEL);
-    		return response;
-    	}
-    	
-    	@Override
-    	protected void onPostExecute(String result) 
-    	{	    		
-    		//loading.setVisibility(View.INVISIBLE);
-    		//startView.startAnimation(a);
-    	}
-    }
+	public void clearSettings()
+	{
+		editor.putString("user", null);
+		editor.commit();
+	}
+	
+	public String getUser()
+	{
+		return prefs.getString("user", null);
+	}
+	
+	public void startChat()
+	{
+		pusher.connect();
+		pusher.subscribe(PRIVATE_CHANNEL);
+	}
 }
