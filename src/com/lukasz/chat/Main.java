@@ -8,16 +8,27 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.FloatMath;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
@@ -52,16 +63,10 @@ public class Main extends Activity
 	private Animation chatOut;
 	private Animation chatIn;
 	
-	private static final int SWIPE_MIN_DISTANCE = 120;
-    private static final int SWIPE_MAX_OFF_PATH = 250;
-    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-    private GestureDetector gestureDetector;
-    View.OnTouchListener gestureListener;
-	
     private Chat app;
 
 	private AlertDialog alert;
-    
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -85,11 +90,11 @@ public class Main extends Activity
 				inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				chat = inflater.inflate(R.layout.chat, null);
 		 		setContentView(chat);
+		 		setUpChatViews();
+				setUpAnimations();
 				Start start = new Start();
 		    	start.execute("...");
 		 		messager = new MessageReceiver(Main.this,inflater,chatScroll,chatList);
-		 		setUpChatViews();
-				setUpAnimations();
 			}
 			else
 			{
@@ -198,20 +203,8 @@ public class Main extends Activity
 		chatList = (LinearLayout)chat.findViewById(R.id.chatList);		
 		chatScroll = (ScrollView)chat.findViewById(R.id.chatScroll);
 		input = (EditText)chat.findViewById(R.id.text);
-		
-		// Gesture detection
-        gestureDetector = new GestureDetector(new MyGestureDetector());
-        gestureListener = new View.OnTouchListener() 
-        {
-            public boolean onTouch(View v, MotionEvent event) 
-            {
-                return gestureDetector.onTouchEvent(event);
-            }
-        };
-
-        //touch.setOnTouchListener(gestureListener);
 	}
-
+	
 	public void addView(View v)
 	{
 		chatList.addView(v);
@@ -223,34 +216,7 @@ public class Main extends Activity
 	        } 
 		});
 	}
-	
-	class MyGestureDetector extends SimpleOnGestureListener 
-    {
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) 
-        {
-            try 
-            {
-                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
-                    return false;
-                // right to left swipe
-                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) 
-                {
-
-                }  
-                else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) 
-                {
-
-                }
-            } 
-            catch (Exception e) 
-            {
-                // nothing
-            }
-            return false;
-        }
-    }
-	
+		
 	public boolean isOnline() 
     {
         NetworkInfo info = ((ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();

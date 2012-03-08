@@ -1,5 +1,6 @@
 package com.lukasz.chat;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.json.JSONException;
@@ -29,10 +30,13 @@ public class MessageReceiver
 	
 	private Main main;
 	
+	private ArrayList<View> messages;
+	
 	public MessageReceiver(Main ac, LayoutInflater i,ScrollView chatScroll,LinearLayout chatList)
 	{
 		this.inflater = i;
 		this.main = ac;
+		messages = new ArrayList();
 		a = AnimationUtils.loadAnimation(ac.getBaseContext(), R.anim.in);
 		myHandler = new CustomHandler();		
 	}
@@ -120,6 +124,41 @@ public class MessageReceiver
 		text.setText(mess);
 		
 		main.addView(chatMessage);
+		messages.add(chatMessage);
 		chatMessage.startAnimation(a);
+	}
+	
+	public void setText(float s)
+	{
+		
+		
+		int len = messages.size();
+		
+		TextView t = null;
+		
+		for(int i = 0; i< len;i++)
+		{
+			t = (TextView)messages.get(i).findViewById(R.id.time);
+			
+			Float current = t.getTextSize();
+			
+			Float size = current + s;
+			
+			if(size <= 3)
+			{
+				size = 3.0f;
+			}
+			
+			if(size >= 20)
+			{
+				size = 20.0f;
+			}
+			
+			t.setTextSize(size);
+			t = (TextView)messages.get(i).findViewById(R.id.message);
+			t.setTextSize(size);
+			t = (TextView)messages.get(i).findViewById(R.id.name);
+			t.setTextSize(size);
+		}
 	}
 }

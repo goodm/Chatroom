@@ -25,13 +25,12 @@
             android:layout_alignParentRight="true"
             android:onClick="onClick"
             android:text="Send" />
-
+
         <ScrollView
             android:id="@+id/chatScroll"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/text"
-            android:layout_alignParentTop="true" >
+            android:layout_height="80dp"
+            android:layout_above="@+id/text" >
 
 	        <LinearLayout
 	            android:id="@+id/chatList"
@@ -39,6 +38,18 @@
 	            android:layout_height="match_parent"
 	            android:orientation="vertical" >
 	        </LinearLayout>
-        </ScrollView>	            "
+        </ScrollView>
+
+        <SurfaceView
+            android:id="@+id/surface"
+            android:background="#000000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/chatScroll"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true" />
+
+	            "
             
 </RelativeLayout>

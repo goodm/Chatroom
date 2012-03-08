@@ -20,18 +20,19 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int back=0x7f060008;
+        public static final int back=0x7f060009;
         public static final int chatList=0x7f060003;
         public static final int chatScroll=0x7f060002;
-        public static final int enter=0x7f060006;
-        public static final int loading=0x7f060007;
-        public static final int loginLayout=0x7f060004;
-        public static final int message=0x7f06000b;
-        public static final int name=0x7f060009;
-        public static final int nameEnter=0x7f060005;
+        public static final int enter=0x7f060007;
+        public static final int loading=0x7f060008;
+        public static final int loginLayout=0x7f060005;
+        public static final int message=0x7f06000c;
+        public static final int name=0x7f06000a;
+        public static final int nameEnter=0x7f060006;
         public static final int send=0x7f060001;
+        public static final int surface=0x7f060004;
         public static final int text=0x7f060000;
-        public static final int time=0x7f06000a;
+        public static final int time=0x7f06000b;
     }
     public static final class layout {
         public static final int chat=0x7f030000;
