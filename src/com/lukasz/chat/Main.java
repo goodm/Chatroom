@@ -1,5 +1,6 @@
 package com.lukasz.chat;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.lukasz.chat.login.Login;
@@ -9,36 +10,19 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Paint.Style;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.FloatMath;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.Toast;
 
 public class Main extends Activity 
 {
@@ -47,22 +31,15 @@ public class Main extends Activity
 	//Chat View
 	private LinearLayout chatList;
 	private ScrollView chatScroll;
-	private ScrollView touch;
-	private View startView;
 	private View chat;
 	private LayoutInflater inflater;
 	private EditText input;
-
-	private ProgressBar loading;
-	private boolean load = false;
 	
 	private MessageReceiver messager;
 
 	private Animation a;
-	private Animation b;
 	
 	private Animation chatOut;
-	private Animation chatIn;
 	
     private Chat app;
 
@@ -125,8 +102,6 @@ public class Main extends Activity
 	private void setUpAnimations() 
 	{
 		a = AnimationUtils.loadAnimation(this, R.anim.out);
-		b = AnimationUtils.loadAnimation(this, R.anim.in);
-		chatIn = AnimationUtils.loadAnimation(this, R.anim.chatin);
 		chatOut = AnimationUtils.loadAnimation(this, R.anim.chatout);
 
 		chatOut.setAnimationListener(new AnimationListener()
@@ -175,7 +150,7 @@ public class Main extends Activity
 					try 
 					{
 						String eventName = "client-new_message";
-						String channelName = app.PRIVATE_CHANNEL;
+						String channelName = Chat.PRIVATE_CHANNEL;
 						JSONObject eventData = new JSONObject("{name:"+ nick +",message:\""+mess+"\"}");
 						app.pusher.sendEvent(eventName, eventData, channelName);
 					} 
@@ -191,13 +166,54 @@ public class Main extends Activity
 		}
 	}
 	
-
+	public void addObject(float x, float y)
+	{
+		try 
+		{
+			String eventName = "client-new_object";
+			String channelName = Chat.PRIVATE_CHANNEL;
+			JSONObject eventData = new JSONObject("{x:"+ x +",y:"+y+"}");
+			app.pusher.sendEvent(eventName, eventData, channelName);
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void sendMove(int index,int xpos, int ypos) 
+	{
+		try 
+		{
+			String eventName = "client-move_object";
+			String channelName = Chat.PRIVATE_CHANNEL;
+			JSONObject eventData = new JSONObject("{i:" + index + ",x:"+ xpos +",y:"+ypos+"}");
+			app.pusher.sendEvent(eventName, eventData, channelName);
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
+	}
 	
     public void onMessageReceive(String event,String data)
     {
     	if(messager != null)
     	{
-    		messager.onMessageReceive(event, data);
+    		if(event.compareToIgnoreCase("new_message") == 0 || event.compareToIgnoreCase("client-new_message") == 0)
+    		{
+    			messager.onMessageReceive(data);
+    		}
+    		else if(event.compareToIgnoreCase("new_object") == 0 || event.compareToIgnoreCase("client-new_object") == 0)
+    		{
+    			p.addNew(data);
+    		} 
+    		else if(event.compareToIgnoreCase("move_object") == 0 || event.compareToIgnoreCase("client-move_object") == 0)
+    		{
+    			p.moveObject(data);
+    		}   
     	}
     }
     
@@ -207,6 +223,7 @@ public class Main extends Activity
 		chatScroll = (ScrollView)chat.findViewById(R.id.chatScroll);
 		input = (EditText)chat.findViewById(R.id.text);
 		p = (Panel)findViewById(R.id.surface);
+		p.setMain(Main.this);
 	}
 	
 	public void addView(View v)

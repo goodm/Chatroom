@@ -41,35 +41,18 @@ public class MessageReceiver
 		myHandler = new CustomHandler();		
 	}
 	
-	public void onMessageReceive(String event,String data)
+	public void onMessageReceive(String data)
 	{		
-		if(event.compareToIgnoreCase("new_message") == 0)
+		try
 		{
-			try
-			{
-				JSONObject d = new JSONObject(data);
-				name = d.getString("name");
-				message = d.getString("message");
-				myHandler.sendEmptyMessage(0);
-			}
-			catch(JSONException e)
-			{
-				Log.e("JSON","error " + e.toString());
-			}
+			JSONObject d = new JSONObject(data);
+			name = d.getString("name");
+			message = d.getString("message");
+			myHandler.sendEmptyMessage(0);
 		}
-		else if(event.compareToIgnoreCase("client-new_message") == 0)
+		catch(JSONException e)
 		{
-			try
-			{
-				JSONObject d = new JSONObject(data);
-				name = d.getString("name");
-				message = d.getString("message");
-				myHandler.sendEmptyMessage(0);
-			}
-			catch(JSONException e)
-			{
-				Log.e("JSON","error " + e.toString());
-			}
+			Log.e("JSON","error " + e.toString());
 		}
 	}
 	

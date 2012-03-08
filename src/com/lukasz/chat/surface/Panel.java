@@ -1,8 +1,11 @@
 package com.lukasz.chat.surface;
 
 import java.util.ArrayList;
-import java.util.Random;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.lukasz.chat.Main;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,7 +14,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 
 public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 {
@@ -19,20 +21,14 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 	public static float mHeight;
 	private ViewThread mThread;
 	private ArrayList<Element>mElements = new ArrayList<Element>();
-	
-	
-	private boolean touched = false;
-	
-	private int s = 0;
-	private boolean adding = true;
+
 	private int xpos;
 	private int ypos;
-		
 	private boolean grabed = false;
-	
 	private boolean type = false;
-	
 	private boolean moving = false;
+	
+	private Main main;
 	
 	public Panel(Context context,AttributeSet attrs)
 	{
@@ -75,32 +71,7 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 				else
 				{
 					mElements.get(i).pos(xpos,ypos);
-					mElements.get(i).moveAll(elapsedTime);
 				}
-				
-				/*
-				for(int j=0;j<mElements.size();j++)
-				{
-					if(i!=j)
-					{
-						if((mElements.get(i).getXpos() < mElements.get(j).getXpos() && mElements.get(i).getXpos() + mElements.get(i).getW() > mElements.get(j).getXpos()) || ((mElements.get(j).getXpos() < mElements.get(i).getXpos() && mElements.get(j).getXpos() + mElements.get(j).getW() > mElements.get(i).getXpos())))
-						{
-							if((mElements.get(i).getYpos() > mElements.get(j).getYpos() && mElements.get(j).getYpos() + mElements.get(j).getH()> mElements.get(i).getYpos()) || (mElements.get(j).getYpos() > mElements.get(i).getYpos() && mElements.get(i).getYpos() + mElements.get(i).getH()> mElements.get(j).getYpos()))
-							{
-								mElements.get(i).t = true;
-							}
-							else
-							{
-								mElements.get(i).t = false;	
-							}
-						}
-						else
-						{
-							mElements.get(i).t = false;
-						}
-					}
-				}
-				*/
 			}	
 			
 			
@@ -122,6 +93,8 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
+		int index = 0;
+		
 		synchronized(mElements)
 		{
 			int action = event.getAction();
@@ -130,16 +103,20 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 				
 				switch(action)
 				{
-				   case MotionEvent.ACTION_DOWN:		
-					   for(Element element : mElements)
+				   case MotionEvent.ACTION_DOWN:
+					   
+					   int len = mElements.size();
+					   
+					   for(int i = 0;i < len;i++)
 					   {
 						   if(grabed == false)
 						   {
-							   if((int) event.getX() < element.getXpos() + element.getW() && (int) event.getX() > element.getXpos())
+							   if((int) event.getX() < mElements.get(i).getXpos() + mElements.get(i).getW() && (int) event.getX() > mElements.get(i).getXpos())
 							   {
-								   if((int) event.getY() < element.getYpos() + element.getH() && (int) event.getY() > element.getYpos())
+								   if((int) event.getY() < mElements.get(i).getYpos() + mElements.get(i).getH() && (int) event.getY() > mElements.get(i).getYpos())
 								   {										
-									   element.move = true;									   									   
+									   mElements.get(i).move = true;		
+									   index = i;
 									   grabed = true;
 									   moving = false;
 								   }
@@ -148,8 +125,8 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 							   {
 								   if(moving == false)
 								   {
-									   element.pos(xpos,ypos);
-									   element.countDif();
+									   mElements.get(i).pos(xpos,ypos);
+									   mElements.get(i).countDif();
 								   }								   								   
 							   }
 							   
@@ -159,6 +136,8 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 					   
 					   if(grabed == false)
 					   {
+						   mElements.add(new Element(getResources(), (int) event.getX(), (int) event.getY()));
+						   main.addObject(event.getX(), event.getY());
 						   moving = true;
 					   }
 					   
@@ -166,9 +145,14 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 				   case MotionEvent.ACTION_UP:
 					   grabed = false;
 					   moving = false;
-				   	   for(Element element : mElements)
+					   
+					   int ln = mElements.size();
+					   
+					   main.sendMove(index,mElements.get(index).getXpos(),mElements.get(index).getYpos());
+					   
+					   for(int j = 0;j < ln;j++)
 				   	   {				   		  
-				   		   element.move = false; 
+						   mElements.get(j).move = false; 
 				   	   }
 				   break;
 				}				
@@ -176,6 +160,31 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 		return true;
 	}
 	
+	public void addNew(String data)
+	{
+		try
+		{
+			JSONObject d = new JSONObject(data);
+			mElements.add(new Element(getResources(), d.getInt("x"), d.getInt("y")));
+		}
+		catch(JSONException e)
+		{
+			Log.e("JSON","error " + e.toString());
+		}
+	}
+	
+	public void moveObject(String data) 
+	{
+		try
+		{
+			JSONObject d = new JSONObject(data);
+			mElements.get(d.getInt("i")).goTO(d.getInt("x"), d.getInt("y"));
+		}
+		catch(JSONException e)
+		{
+			Log.e("JSON","error " + e.toString());
+		}		
+	}
 	
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,int height) 
@@ -188,13 +197,6 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 	public void surfaceCreated(SurfaceHolder holder) 
 	{
 		setEGLContextClientVersion(2);
-		Random rand = new Random();
-		
-		mElements.add(new Element(getResources(), rand.nextInt(300), rand.nextInt(400)));
-		mElements.add(new Element(getResources(), rand.nextInt(300), rand.nextInt(400)));
-		mElements.add(new Element(getResources(), rand.nextInt(300), rand.nextInt(400)));
-		mElements.add(new Element(getResources(), rand.nextInt(300), rand.nextInt(400)));
-		mElements.add(new Element(getResources(), rand.nextInt(300), rand.nextInt(400)));
 		
 		if(!mThread.isAlive())
 		{
@@ -212,5 +214,16 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 		{
 			mThread.setRunning(false);
 		}		
+	}
+	
+	public void destroy()
+	{
+		this.destroy();
+		mThread.setRunning(false);
+	}
+
+	public void setMain(Main m) 
+	{
+		this.main = m;
 	}
 }

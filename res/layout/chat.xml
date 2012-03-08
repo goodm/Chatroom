@@ -42,7 +42,6 @@
 
         <com.lukasz.chat.surface.Panel
             android:id="@+id/surface"
-            android:background="#000000"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/chatScroll"

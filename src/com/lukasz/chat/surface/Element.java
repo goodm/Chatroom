@@ -55,27 +55,9 @@ public class Element
 			mX -= (mX - (xpos - mBitmap.getWidth()/2))/speed;
 			mY -= (mY - (ypos - mBitmap.getHeight()/2))/speed;			
 		}
-		else
-		{
-			if(t == false)
-			{
-				mBitmap = BitmapFactory.decodeResource(res, R.drawable.ic_launcher);
-				Random rand = new Random();
-				mX -= (int) z/(speed+rand.nextInt(10));
-				mY -= (int) (y+45)/(speed+rand.nextInt(10));
-			}
-		}
 		checkBordes();
 	}
-	
-	public void moveAll(long elapsedTime)
-	{					
-		mX = xpos - xtemp;
-		mY = ypos - ytemp;			
 		
-		checkBordes();
-	}
-	
 	public void sensMove(float x, float y, float z)
 	{
 		this.z = z;
