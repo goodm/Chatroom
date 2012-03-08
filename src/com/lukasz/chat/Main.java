@@ -212,6 +212,7 @@ public class Main extends Activity
     		} 
     		else if(event.compareToIgnoreCase("move_object") == 0 || event.compareToIgnoreCase("client-move_object") == 0)
     		{
+    			Log.d("RECEIVE", "MOVE");
     			p.moveObject(data);
     		}   
     	}

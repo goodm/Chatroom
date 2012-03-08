@@ -16,32 +16,27 @@ public class Element
 	private int mX;
 	private int mY;
 	
-	private int xtemp;
-	private int ytemp;
-	
 	private Bitmap mBitmap;
 	
 	private int speed=2;
 	
 	public boolean move = false;
 	public boolean go = false;
-	
-	private Random rand;
+
 	
 	private Resources res;
 	
 	private int xpos;
 	private int ypos;
 	
-	private float z;
-	private float y;
-	
 	public boolean t = false;
+	private boolean pMove = false;
+	private int tempXpos;
+	private int tempYpos;
 	
 	public Element(Resources r, int x, int y)
 	{
 		res = r;
-		rand = new Random();
 		mBitmap = BitmapFactory.decodeResource(res, R.drawable.ic_launcher);
 		mX = x - mBitmap.getWidth()/2;
 		mY = y - mBitmap.getHeight()/2;
@@ -51,24 +46,25 @@ public class Element
 	{			
 		if(move == true)
 		{
+			pMove = false;
 			mBitmap = BitmapFactory.decodeResource(res, R.drawable.ic_launcher);
 			mX -= (mX - (xpos - mBitmap.getWidth()/2))/speed;
 			mY -= (mY - (ypos - mBitmap.getHeight()/2))/speed;			
 		}
-		checkBordes();
-	}
 		
-	public void sensMove(float x, float y, float z)
-	{
-		this.z = z;
-		this.y = y;
-	}
-	
-	public void countDif()
-	{
-		xtemp = xpos - mX;
-		ytemp = ypos - mY;
-		Log.i("COUNT", String.valueOf(xtemp) + " " + String.valueOf(xtemp));
+		if(pMove  == true && move == false)
+		{
+			mBitmap = BitmapFactory.decodeResource(res, R.drawable.ic_launcher);
+			mX -= (mX - (tempXpos - mBitmap.getWidth()/2))/speed;
+			mY -= (mY - (tempYpos - mBitmap.getHeight()/2))/speed;	
+			
+			if(mX < tempXpos+10 && mX > tempXpos-10 && mY < tempYpos+10 && mY > tempYpos-10)
+			{
+				pMove = false;
+			}
+		}
+		
+		checkBordes();
 	}
 	
 	public void pos(int pX,int pY)
@@ -79,9 +75,9 @@ public class Element
 	
 	public void goTO(int pX,int pY)
 	{
-		xpos = pX;
-		ypos = pY;
-		move = true;		
+		tempXpos = pX;
+		tempYpos = pY;
+		pMove = true;		
 	}
 	
 	public int getXpos()

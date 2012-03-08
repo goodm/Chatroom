@@ -27,7 +27,7 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 	private boolean grabed = false;
 	private boolean type = false;
 	private boolean moving = false;
-	
+	private int index = 0;
 	private Main main;
 	
 	public Panel(Context context,AttributeSet attrs)
@@ -46,14 +46,6 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 			{
 				element.doDraw(canvas);
 			}
-		}
-	}
-
-	public void moveAll(float x, float y, float z)
-	{
-		for(Element element : mElements)
-		{
-			element.sensMove(x, y, z);
 		}
 	}
 	
@@ -93,14 +85,14 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
-		int index = 0;
+
 		
 		synchronized(mElements)
 		{
 			int action = event.getAction();
 				xpos = (int) event.getX();
 				ypos = (int) event.getY();
-				
+	
 				switch(action)
 				{
 				   case MotionEvent.ACTION_DOWN:
@@ -126,11 +118,8 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 								   if(moving == false)
 								   {
 									   mElements.get(i).pos(xpos,ypos);
-									   mElements.get(i).countDif();
 								   }								   								   
 							   }
-							   
-							   
 						   }
 					   }
 					   
@@ -147,7 +136,7 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 					   moving = false;
 					   
 					   int ln = mElements.size();
-					   
+					   Log.i("INDEX",String.valueOf(index));
 					   main.sendMove(index,mElements.get(index).getXpos(),mElements.get(index).getYpos());
 					   
 					   for(int j = 0;j < ln;j++)
@@ -178,7 +167,10 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 		try
 		{
 			JSONObject d = new JSONObject(data);
-			mElements.get(d.getInt("i")).goTO(d.getInt("x"), d.getInt("y"));
+			if(mElements.get(d.getInt("i")) != null)
+			{
+				mElements.get(d.getInt("i")).goTO(d.getInt("x"), d.getInt("y"));
+			}
 		}
 		catch(JSONException e)
 		{
