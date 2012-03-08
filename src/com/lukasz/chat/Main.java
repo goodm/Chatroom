@@ -3,6 +3,7 @@ package com.lukasz.chat;
 import org.json.JSONObject;
 
 import com.lukasz.chat.login.Login;
+import com.lukasz.chat.surface.Panel;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -67,6 +68,8 @@ public class Main extends Activity
 
 	private AlertDialog alert;
 	
+	private Panel p;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -89,7 +92,7 @@ public class Main extends Activity
 				nick = app.getUser();
 				inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				chat = inflater.inflate(R.layout.chat, null);
-		 		setContentView(chat);
+		 		setContentView(chat);		 		
 		 		setUpChatViews();
 				setUpAnimations();
 				Start start = new Start();
@@ -203,6 +206,7 @@ public class Main extends Activity
 		chatList = (LinearLayout)chat.findViewById(R.id.chatList);		
 		chatScroll = (ScrollView)chat.findViewById(R.id.chatScroll);
 		input = (EditText)chat.findViewById(R.id.text);
+		p = (Panel)findViewById(R.id.surface);
 	}
 	
 	public void addView(View v)
