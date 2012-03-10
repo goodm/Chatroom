@@ -9,6 +9,8 @@ import com.lukasz.chat.Main;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -30,16 +32,30 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 	private int index = 0;
 	private Main main;
 	
+	private Paint paint;
+	
 	public Panel(Context context,AttributeSet attrs)
 	{
 		super(context,attrs);
 		getHolder().addCallback(this);
 		mThread = new ViewThread(this);
+		createText();
 	}
 		
+	private void createText()
+	{
+		paint = new Paint();      
+		paint.setStyle(Style.FILL);  
+		paint.setColor(Color.WHITE);
+		paint.setTextSize(15);
+		paint.setTextAlign(Paint.Align.CENTER);
+		paint.setAntiAlias(true);
+	}
+	
 	public void doDraw(long elapse, Canvas canvas)
 	{
 		canvas.drawColor(Color.BLACK);
+		canvas.drawText("Test TEXT", 100,100, paint);
 		synchronized(mElements)
 		{
 			for(Element element : mElements)
@@ -194,7 +210,7 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 		{
 			mThread = new ViewThread(this);
 			mThread.setRunning(true);
-			mThread.start();						
+			mThread.start();					
 		}
 		
 	}
