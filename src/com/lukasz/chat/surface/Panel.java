@@ -23,6 +23,7 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 	public static float mHeight;
 	private ViewThread mThread;
 	private ArrayList<Element>mElements = new ArrayList<Element>();
+	private ArrayList<GrafText>texts = new ArrayList<GrafText>();
 
 	private int xpos;
 	private int ypos;
@@ -32,30 +33,21 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 	private int index = 0;
 	private Main main;
 	
-	private Paint paint;
+	//text
+	private boolean left = true;
+	private int posY = 10;
 	
 	public Panel(Context context,AttributeSet attrs)
 	{
 		super(context,attrs);
 		getHolder().addCallback(this);
 		mThread = new ViewThread(this);
-		createText();
 	}
 		
-	private void createText()
-	{
-		paint = new Paint();      
-		paint.setStyle(Style.FILL);  
-		paint.setColor(Color.WHITE);
-		paint.setTextSize(15);
-		paint.setTextAlign(Paint.Align.CENTER);
-		paint.setAntiAlias(true);
-	}
-	
 	public void doDraw(long elapse, Canvas canvas)
 	{
 		canvas.drawColor(Color.BLACK);
-		canvas.drawText("Test TEXT", 100,100, paint);
+
 		synchronized(mElements)
 		{
 			for(Element element : mElements)
@@ -63,6 +55,35 @@ public class Panel extends GLSurfaceView implements SurfaceHolder.Callback
 				element.doDraw(canvas);
 			}
 		}
+		
+		synchronized(texts)
+		{
+			for(GrafText text : texts)
+			{
+				text.doDraw(canvas);
+			}
+		}
+	}
+	
+	public void addText(String t)
+	{
+		int posX = 10;
+		
+		if(left == false)
+		{
+			posX = (int)Panel.mWidth-(10+(t.length()*10));
+			left = true;
+		}
+		else
+		{
+			left = false;
+		}
+
+		
+		GrafText text = new GrafText(t,posX+(t.length()*10),posY);
+		texts.add(text);
+		
+		posY += 20;
 	}
 	
 	public void animate(long elapsedTime)

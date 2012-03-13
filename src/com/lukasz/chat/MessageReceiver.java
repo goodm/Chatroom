@@ -106,7 +106,7 @@ public class MessageReceiver
 		text = (TextView)chatMessage.findViewById(R.id.message);
 		text.setText(mess);
 		
-		main.addView(chatMessage);
+		main.addView(chatMessage,mess);
 		messages.add(chatMessage);
 		chatMessage.startAnimation(a);
 	}

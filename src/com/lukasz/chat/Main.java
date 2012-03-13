@@ -227,8 +227,9 @@ public class Main extends Activity
 		p.setMain(Main.this);
 	}
 	
-	public void addView(View v)
+	public void addView(View v,String t)
 	{
+		p.addText(t);
 		chatList.addView(v);
 		chatScroll.post(new Runnable() 
 		{ 
